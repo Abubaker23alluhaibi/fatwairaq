@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MyMauiApp.ArticleDetailsPage"
+             Title="تفاصيل المقال">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="رجوع" Clicked="OnBackClicked" Order="Primary" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            
+            <!-- Title -->
+            <Label x:Name="TitleLabel"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   TextColor="#0D4435"
+                   HorizontalOptions="FillAndExpand"/>
+
+            <!-- Content -->
+            <Label x:Name="ContentLabel"
+                   FontSize="16"
+                   TextColor="#333"
+                   LineBreakMode="WordWrap"/>
+
+            <!-- Info -->
+            <Frame BackgroundColor="#F5F5F5" 
+                   CornerRadius="10" 
+                   Padding="15">
+                <VerticalStackLayout Spacing="8">
+                    <Label x:Name="AuthorLabel"
+                           FontSize="14"
+                           TextColor="#666"/>
+                    <Label x:Name="DateLabel"
+                           FontSize="12"
+                           TextColor="#999"/>
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
+

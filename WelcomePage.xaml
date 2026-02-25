@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MyMauiApp.WelcomePage"
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="#FAF9F7">
+    <Grid BackgroundColor="#FAF9F7">
+        <!-- صورة الخلفية (تُحمّل من Raw asset في الكود) -->
+        <Image x:Name="BackgroundImage"
+               Aspect="AspectFill"
+               Opacity="1"/>
+        <!-- طبقة ترحيب: الجملة في الوسط بحجم أصغر -->
+        <VerticalStackLayout VerticalOptions="Center" 
+                             HorizontalOptions="Center" 
+                             Spacing="8">
+            <Label x:Name="WelcomeLabel"
+                   Text="أهلاً بكم في تطبيق فتاوى العراق"
+                   FontFamily="CairoRegular"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="#0D4435"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   Opacity="0"/>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

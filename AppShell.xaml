@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="MyMauiApp.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:MyMauiApp"
+    Title="فتاوى العراق"
+    Shell.FlyoutBehavior="Flyout"
+    FlyoutBackgroundColor="#0D4435"
+    FlyoutHeaderBehavior="CollapseOnScroll">
+
+    <!-- عناصر القائمة الجانبية — كتابة بيضاء مثل الرئيسية ونتائج البحث -->
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid Padding="20,14" HeightRequest="50">
+                <Label Text="{Binding Title}"
+                       TextColor="White"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center"/>
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+    <Shell.MenuItemTemplate>
+        <DataTemplate>
+            <Grid Padding="20,14" HeightRequest="50">
+                <Label Text="{Binding Text}"
+                       TextColor="White"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center"/>
+            </Grid>
+        </DataTemplate>
+    </Shell.MenuItemTemplate>
+
+    <!-- رأس القائمة الجانبية -->
+    <Shell.FlyoutHeader>
+        <Grid BackgroundColor="#0D4435" Padding="20,50,20,20">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="فتاوى العراق"
+                       TextColor="#D4AF37"
+                       FontSize="22"
+                       FontAttributes="Bold"/>
+                <Label Text="المجمع الفقهي العراقي"
+                       TextColor="White"
+                       FontSize="12"
+                       Opacity="0.9"/>
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <!-- الرئيسية: البحث + الأبواب الفقهية -->
+    <FlyoutItem Title="الرئيسية" Route="MainPage">
+        <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="الفتاوى العامة" Route="FatwasListPage">
+        <ShellContent ContentTemplate="{DataTemplate local:FatwasListPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="العلماء" Route="ScholarsPage">
+        <ShellContent ContentTemplate="{DataTemplate local:ScholarsPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="مجلة الفتوى (المقالات)" Route="ArticlesPage">
+        <ShellContent ContentTemplate="{DataTemplate local:ArticlesPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="المفضلة" Route="FavoritesPage">
+        <ShellContent ContentTemplate="{DataTemplate local:FavoritesPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="الإعدادات" Route="SettingsPage">
+        <ShellContent ContentTemplate="{DataTemplate local:SettingsPage}" />
+    </FlyoutItem>
+
+    <MenuItem Text="سياسة الخصوصية" Clicked="OnPrivacyPolicyClicked" />
+
+    <!-- صفحات تُفتح بالتنقل فقط (لا تظهر في قائمة الهمبرجر) -->
+    <ShellContent
+        Title="نتائج البحث"
+        ContentTemplate="{DataTemplate local:SearchResultsPage}"
+        Route="SearchResultsPage" />
+
+    <ShellContent
+        Title="تفاصيل الفتوى"
+        ContentTemplate="{DataTemplate local:FatwaDetailsPage}"
+        Route="FatwaDetailsPage" />
+
+    <ShellContent
+        Title="تفاصيل المقال"
+        ContentTemplate="{DataTemplate local:ArticleDetailsPage}"
+        Route="ArticleDetailsPage" />
+
+</Shell>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MyMauiApp.FatwaDetailsPage"
+             BackgroundColor="#F5F6F2"
+             Title="تفاصيل الفتوى">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="رجوع" Clicked="OnBackClicked" Order="Primary" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="25">
+
+            <Border StrokeShape="RoundRectangle 15" 
+                    StrokeThickness="0"
+                    BackgroundColor="White" 
+                    Padding="20">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,2" Radius="10" Opacity="0.05"/>
+                </Border.Shadow>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="نص السؤال" 
+                           FontSize="14" 
+                           FontAttributes="Bold" 
+                           TextColor="#D4AF37"/>
+                    <Label x:Name="QuestionLabel"
+                           FontSize="16"
+                           TextColor="#333"
+                           LineHeight="1.5"
+                           LineBreakMode="WordWrap"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border StrokeShape="RoundRectangle 15" 
+                    StrokeThickness="1"
+                    Stroke="#D4AF37"
+                    BackgroundColor="#FDFCF9" 
+                    Padding="20">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="الجواب الشرعي" 
+                           FontSize="14" 
+                           FontAttributes="Bold" 
+                           TextColor="#0D4435"/>
+                    <Label x:Name="AnswerLabel"
+                           FontSize="16"
+                           TextColor="#333"
+                           LineHeight="1.6"
+                           LineBreakMode="WordWrap"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border StrokeShape="RoundRectangle 15" 
+                    BackgroundColor="#0D4435" 
+                    Padding="20">
+                <VerticalStackLayout Spacing="10">
+                    <Label x:Name="ScholarLabel"
+                           FontSize="14"
+                           TextColor="White"
+                           FontAttributes="Bold"/>
+                    <Label x:Name="CategoryLabel"
+                           FontSize="13"
+                           TextColor="#D4AF37"/>
+                    <Label x:Name="DateLabel"
+                           FontSize="12"
+                           TextColor="#A0C4B8"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="المصدر: موقع المجمع الفقهي العراقي لكبار العلماء"
+                   FontSize="11"
+                   TextColor="#999"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"/>
+
+            <Border StrokeShape="RoundRectangle 15" 
+                    BackgroundColor="White" 
+                    Padding="15"
+                    StrokeThickness="0.5"
+                    Stroke="#E0E0E0">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="تخصيص حجم خط الجواب" 
+                           FontSize="12" 
+                           HorizontalOptions="Center"
+                           TextColor="#666"/>
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                        <Button Text="صغير"
+                                BackgroundColor="#F5F5F5"
+                                TextColor="#333"
+                                HeightRequest="40"
+                                CornerRadius="8"
+                                Clicked="OnFontSizeSmall"
+                                Grid.Column="0"/>
+                        <Button Text="متوسط"
+                                BackgroundColor="#0D4435"
+                                TextColor="White"
+                                HeightRequest="40"
+                                CornerRadius="8"
+                                Clicked="OnFontSizeMedium"
+                                Grid.Column="1"/>
+                        <Button Text="كبير"
+                                BackgroundColor="#F5F5F5"
+                                TextColor="#333"
+                                HeightRequest="40"
+                                CornerRadius="8"
+                                Clicked="OnFontSizeLarge"
+                                Grid.Column="2"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="15" Margin="0,10,0,20">
+                <Button x:Name="FavoriteButton"
+                        Text="حفظ في المفضلة"
+                        BackgroundColor="#D4AF37"
+                        TextColor="#0D4435"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        Clicked="OnFavoriteClicked"
+                        Grid.Column="0"/>
+                <Button Text="مشاركة الفتوى"
+                        BackgroundColor="#0D4435"
+                        TextColor="White"
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        Clicked="OnShareClicked"
+                        Grid.Column="1"/>
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

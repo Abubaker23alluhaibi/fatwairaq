@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:MyMauiApp.Models"
+             x:Class="MyMauiApp.ScholarsPage"
+             BackgroundColor="#F5F6F2"
+             Title="العلماء">
+    
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="رجوع" Clicked="OnBackClicked" Order="Primary" />
+    </ContentPage.ToolbarItems>
+
+    <RefreshView x:Name="RefreshView"
+                 IsRefreshing="False"
+                 Refreshing="OnRefresh"
+                 RefreshColor="#D4AF37">
+        <Grid RowDefinitions="Auto,*">
+
+            <Border Grid.Row="0"
+                    StrokeShape="RoundRectangle 0,0,25,25"
+                    StrokeThickness="0"
+                    BackgroundColor="#0D4435"
+                    Padding="20">
+                <Border.Shadow>
+                    <Shadow Brush="#0D4435" Offset="0,4" Radius="10" Opacity="0.3"/>
+                </Border.Shadow>
+                
+                <Label Text="علماء المجمع الفقهي" 
+                       TextColor="#D4AF37" 
+                       FontSize="22" 
+                       FontAttributes="Bold" 
+                       HorizontalOptions="Center"/>
+            </Border>
+
+            <VerticalStackLayout Grid.Row="1" 
+                                 x:Name="LoadingIndicator"
+                                 VerticalOptions="Center" 
+                                 HorizontalOptions="Center"
+                                 Spacing="10">
+                <ActivityIndicator IsRunning="True" Color="#0D4435" Scale="1.5"/>
+                <Label Text="جاري التحميل..." TextColor="#0D4435" FontSize="14"/>
+            </VerticalStackLayout>
+
+            <CollectionView x:Name="ScholarsCollectionView"
+                            Grid.Row="1"
+                            IsVisible="False"
+                            SelectionMode="Single"
+                            SelectionChanged="OnScholarSelected"
+                            Margin="0,10">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Scholar">
+                        <Border StrokeShape="RoundRectangle 15" 
+                                BackgroundColor="White" 
+                                Padding="20" 
+                                Margin="15,8"
+                                StrokeThickness="0.5"
+                                Stroke="#E0E0E0">
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.05"/>
+                            </Border.Shadow>
+                            
+                            <Grid ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="8">
+                                    <Label Text="{Binding Name}" 
+                                           FontSize="18" 
+                                           FontAttributes="Bold" 
+                                           TextColor="#0D4435"/>
+                                    
+                                    <Label Text="{Binding Description}" 
+                                           FontSize="13" 
+                                           TextColor="#666"
+                                           MaxLines="2"
+                                           LineHeight="1.2"
+                                           LineBreakMode="TailTruncation"/>
+                                </VerticalStackLayout>
+
+                                <Label Grid.Column="1"
+                                       Text="←" 
+                                       FontSize="20" 
+                                       TextColor="#D4AF37"
+                                       VerticalOptions="Center"
+                                       Margin="10,0,0,0"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <VerticalStackLayout x:Name="NoResultsLabel"
+                                 Grid.Row="1"
+                                 IsVisible="False"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Spacing="10">
+                <Label Text="لم يتم العثور على بيانات العلماء"
+                       FontSize="16"
+                       TextColor="#999"
+                       HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+        </Grid>
+    </RefreshView>
+</ContentPage>  

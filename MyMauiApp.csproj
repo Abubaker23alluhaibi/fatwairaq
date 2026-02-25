@@ -1,0 +1,96 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!-- على Windows: أندرويد وويندوز فقط (بناء iOS يحتاج Mac) -->
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net9.0-android;net9.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
+
+		<!-- Note for MacCatalyst:
+		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
+		When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
+		The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
+		either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
+		<!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
+
+		<OutputType>Exe</OutputType>
+		<RootNamespace>MyMauiApp</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<!-- Display name -->
+		<ApplicationTitle>فتاوى العراق</ApplicationTitle>
+
+		<!-- App Identifier -->
+		<ApplicationId>com.iraqifatawa.app</ApplicationId>
+
+		<!-- Versions -->
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
+
+		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
+		<WindowsPackageType>None</WindowsPackageType>
+
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+
+		<!-- توقيع Android: Debug = debug.keystore | Release = مفتاح الإنتاج (انظر PRODUCTION_CHECKLIST.md) -->
+		<AndroidPackageFormat>apk</AndroidPackageFormat>
+		<AndroidKeyStore>true</AndroidKeyStore>
+		<AndroidSigningKeyStore>$(USERPROFILE)\.android\debug.keystore</AndroidSigningKeyStore>
+		<AndroidSigningStorePass>android</AndroidSigningStorePass>
+		<AndroidSigningKeyAlias>androiddebugkey</AndroidSigningKeyAlias>
+		<AndroidSigningKeyPass>android</AndroidSigningKeyPass>
+
+		<!-- حتى يتصرف APK المنشور مثل التثبيت عبر USB (تفادي كراش عند تثبيت الملف) -->
+		<!-- استخدم None لجميع الإعدادات (Debug و Release) لتفادي حذف كود بالـ linker عند بناء APK -->
+		<AndroidLinkMode>None</AndroidLinkMode>
+		<AndroidEnableProguard>false</AndroidEnableProguard>
+		<PublishTrimmed>false</PublishTrimmed>
+		<!-- تعطيل AOT لأننا لا نستخدم trimming (تفادي خطأ XA1030 عند dotnet publish) -->
+		<RunAOTCompilation>false</RunAOTCompilation>
+		<!-- ضروري لـ APK المستقل: تضمين الـ assemblies داخل الـ APK بدل Fast Deployment (.__override__) -->
+		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+	</PropertyGroup>
+
+	<!-- إنتاج Android: توقيع Release + خرج APK (غيّر apk إلى aab لو تبي ترفع على Google Play) -->
+	<!-- يستخدم fatwa-release.keystore في المشروع إن لم تُعيّن ANDROID_KEYSTORE_PATH -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<AndroidPackageFormat>apk</AndroidPackageFormat>
+		<AndroidSigningKeyStore>$(ANDROID_KEYSTORE_PATH)</AndroidSigningKeyStore>
+		<AndroidSigningStorePass>$(ANDROID_KEYSTORE_PASSWORD)</AndroidSigningStorePass>
+		<AndroidSigningKeyAlias>$(ANDROID_KEY_ALIAS)</AndroidSigningKeyAlias>
+		<AndroidSigningKeyPass>$(ANDROID_KEY_PASSWORD)</AndroidSigningKeyPass>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'Release' and '$(ANDROID_KEYSTORE_PATH)' == ''">
+		<AndroidSigningKeyStore>$(MSBuildThisFileDirectory)fatwa-release.keystore</AndroidSigningKeyStore>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- أيقونة التطبيق: شعار المجمع الفقهي العراقي (أخضر وذهبي) بدل البنفسجي -->
+		<MauiIcon Include="Resources\AppIcon\appicon.png" />
+
+		<!-- شاشة البداية (صورة PNG لا تعمل هنا في الربط؛ نستخدم SVG) -->
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#0D4435" BaseSize="128,128" />
+
+		<!-- Images: أضف ملفاتك تحت Resources\Images بأسماء lowercase وبدون مسافات -->
+		<!-- استثناء back.png إذا كان الملف تالفاً (يجب أن يكون PNG صالحاً) -->
+		<MauiImage Include="Resources\Images\*" Condition="Exists('Resources\Images')" Exclude="Resources\Images\back.png" />
+		
+		<!-- Custom Fonts -->
+		<MauiFont Include="Resources\Fonts\*" />
+
+		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+	</ItemGroup>
+
+</Project>

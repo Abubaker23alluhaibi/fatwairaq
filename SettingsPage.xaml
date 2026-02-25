@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MyMauiApp.SettingsPage"
+             BackgroundColor="#F5F6F2"
+             Title="الإعدادات">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="رجوع" Clicked="OnBackClicked" Order="Primary" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="25">
+            
+            <Border StrokeShape="RoundRectangle 15" 
+                    StrokeThickness="0"
+                    BackgroundColor="White" 
+                    Padding="20">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,2" Radius="10" Opacity="0.05"/>
+                </Border.Shadow>
+                
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="تخصيص حجم الخط" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="#0D4435"/>
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                        <Button x:Name="SmallFontButton"
+                                Text="صغير"
+                                BackgroundColor="#F5F5F5"
+                                TextColor="#333"
+                                CornerRadius="10"
+                                HeightRequest="45"
+                                Clicked="OnFontSizeChanged"
+                                Grid.Column="0"/>
+                        <Button x:Name="MediumFontButton"
+                                Text="متوسط"
+                                BackgroundColor="#0D4435"
+                                TextColor="White"
+                                CornerRadius="10"
+                                HeightRequest="45"
+                                Clicked="OnFontSizeChanged"
+                                Grid.Column="1"/>
+                        <Button x:Name="LargeFontButton"
+                                Text="كبير"
+                                BackgroundColor="#F5F5F5"
+                                TextColor="#333"
+                                CornerRadius="10"
+                                HeightRequest="45"
+                                Clicked="OnFontSizeChanged"
+                                Grid.Column="2"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border StrokeShape="RoundRectangle 15" 
+                    StrokeThickness="0"
+                    BackgroundColor="White" 
+                    Padding="20">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,2" Radius="10" Opacity="0.05"/>
+                </Border.Shadow>
+                
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="وضع المظهر" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="#0D4435"/>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+                        <Button x:Name="LightThemeButton"
+                                Text="وضع النهار"
+                                BackgroundColor="#0D4435"
+                                TextColor="White"
+                                CornerRadius="10"
+                                HeightRequest="45"
+                                Clicked="OnThemeChanged"
+                                Grid.Column="0"/>
+                        <Button x:Name="DarkThemeButton"
+                                Text="وضع الليل"
+                                BackgroundColor="#F5F5F5"
+                                TextColor="#333"
+                                CornerRadius="10"
+                                HeightRequest="45"
+                                Clicked="OnThemeChanged"
+                                Grid.Column="1"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border StrokeShape="RoundRectangle 15" 
+                    BackgroundColor="#0D4435" 
+                    Padding="25">
+                <VerticalStackLayout Spacing="15" HorizontalOptions="Center">
+                    <Label Text="عن التطبيق" 
+                           FontSize="20" 
+                           FontAttributes="Bold" 
+                           TextColor="#D4AF37"
+                           HorizontalOptions="Center"/>
+                    
+                    <Label Text="تطبيق فتاوى العراق" 
+                           FontSize="16" 
+                           TextColor="White"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                    
+                    <Label Text="بإدارة المجمع الفقهي العراقي لكبار العلماء للدعوة والإفتاء" 
+                           FontSize="13" 
+                           TextColor="#A0C4B8"
+                           HorizontalTextAlignment="Center"
+                           LineBreakMode="WordWrap"/>
+                    
+                    <Button Text="زيارة الموقع الرسمي"
+                            BackgroundColor="#D4AF37"
+                            TextColor="#0D4435"
+                            FontAttributes="Bold"
+                            CornerRadius="10"
+                            Margin="0,10,0,0"
+                            Clicked="OnVisitWebsite"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="الإصدار 1.0.0"
+                   FontSize="12"
+                   TextColor="#999"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,20"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

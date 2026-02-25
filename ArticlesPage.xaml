@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:MyMauiApp.Models"
+             x:Class="MyMauiApp.ArticlesPage"
+             Title="مجلة الفتوى">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="رجوع" Clicked="OnBackClicked" Order="Primary" />
+    </ContentPage.ToolbarItems>
+
+    <RefreshView x:Name="RefreshView"
+                 IsRefreshing="False"
+                 Refreshing="OnRefresh">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Frame Grid.Row="0"
+                   BackgroundColor="#0D4435" 
+                   CornerRadius="0" 
+                   Padding="15"
+                   Margin="0,0,0,10">
+                <Label Text="مجلة الفتوى" 
+                       TextColor="White" 
+                       FontSize="20" 
+                       FontAttributes="Bold" 
+                       HorizontalOptions="Center"/>
+            </Frame>
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator x:Name="LoadingIndicator"
+                              Grid.Row="1"
+                              IsRunning="True"
+                              IsVisible="True"
+                              Color="#0D4435"
+                              VerticalOptions="Center"
+                              HorizontalOptions="Center"/>
+
+            <!-- Articles List -->
+            <CollectionView x:Name="ArticlesCollectionView"
+                           Grid.Row="1"
+                           IsVisible="False"
+                           SelectionMode="Single"
+                           SelectionChanged="OnArticleSelected">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Article">
+                        <Frame BackgroundColor="White" 
+                               CornerRadius="10" 
+                               Padding="15" 
+                               Margin="10,5"
+                               HasShadow="True">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{Binding Title}" 
+                                       FontSize="18" 
+                                       FontAttributes="Bold" 
+                                       TextColor="#0D4435"/>
+                                
+                                <Grid ColumnDefinitions="*,*">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding Author}" 
+                                           FontSize="12" 
+                                           TextColor="#999"/>
+                                    <Label Grid.Column="1"
+                                           Text="{Binding PublishDate, StringFormat='{0:yyyy-MM-dd}'}" 
+                                           FontSize="12" 
+                                           TextColor="#999"
+                                           HorizontalOptions="End"/>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- No Results Message -->
+            <Label x:Name="NoResultsLabel"
+                   Grid.Row="1"
+                   Text="لا توجد مقالات"
+                   FontSize="18"
+                   TextColor="#999"
+                   IsVisible="False"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+        </Grid>
+    </RefreshView>
+
+</ContentPage>
+

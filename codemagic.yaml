@@ -53,10 +53,11 @@ workflows:
     name: iOS Release
     max_build_duration: 120
     instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: Codemagic_Key
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.iraqifatawa.app
+      groups:
+        - apple_auth
       vars:
         DOTNET_PATH: $CM_BUILD_DIR/dotnet
         DOTNET: $CM_BUILD_DIR/dotnet/dotnet
@@ -71,6 +72,15 @@ workflows:
         script: |
           $DOTNET nuget locals all --clear
           $DOTNET workload install ios maui --source https://api.nuget.org/v3/index.json
+      - name: Set up keychain for code signing
+        script: |
+          keychain initialize
+      - name: Fetch signing files from App Store Connect
+        script: |
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+      - name: Add certificates to keychain
+        script: |
+          keychain add-certificates
       - name: Set Info.plist (export compliance)
         script: |
           PLIST="$CM_BUILD_DIR/Platforms/iOS/Info.plist"
@@ -81,6 +91,7 @@ workflows:
       - name: Build iOS (IPA)
         script: |
           CERT_NAME=$(keychain list-certificates | jq -r '.[] | .common_name' | head -1)
+          PROFILE_NAME=""
           for f in ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision; do
             [ -f "$f" ] || continue
             PROFILE_NAME=$(security cms -D -i "$f" 2>/dev/null | /usr/libexec/PlistBuddy -c "print :Name" /dev/stdin 2>/dev/null)
@@ -95,6 +106,8 @@ workflows:
     artifacts:
       - ./artifacts/ios/*.ipa
     publishing:
+      app_store_connect:
+        auth: integration
       email:
         recipients:
           - fatwairaq@gmail.com

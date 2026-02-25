@@ -43,10 +43,19 @@
 
 **ملاحظة:** إذا لم يعد عندك ملف الـ .p8 (يُحمّل مرة واحدة من App Store Connect)، أنشئ مفتاح API جديد من App Store Connect → Users and Access → Integrations → App Store Connect API، ثم حمّل الـ .p8 واحفظ محتواه في المتغير `APP_STORE_CONNECT_PRIVATE_KEY`.
 
+### التأكد من اسم الـ Integration (مهم جداً)
+
+إذا ظهر خطأ أن المفتاح غير موجود، فالسبب غالباً أن الاسم في الملف لا يطابق الاسم في Codemagic:
+
+1. اذهب إلى **Team settings** → **Integrations** (أو **Team Keys** / **Individual Keys**).
+2. انظر إلى **الاسم (Label)** المكتوب بجانب مفتاح App Store Connect (مثلاً `Codemagic_Key` أو `App Store Connect`).
+3. افتح `codemagic.yaml` وابحث عن السطر `app_store_connect: Codemagic_Key`.
+4. غيّر **Codemagic_Key** إلى الاسم **بالضبط** كما يظهر في Codemagic (حروف كبيرة/صغيرة وشرطة سفلية مهمة).
+
 ### ربط المفتاح في الـ workflow
 
 في `codemagic.yaml` تم ضبط الآتي:
-- **integrations: app_store_connect: Codemagic_Key** — اسم المفتاح اللي أضفته في Team Keys.
+- **integrations: app_store_connect: Codemagic_Key** — غيّر `Codemagic_Key` إلى الاسم الحقيقي من Team settings إذا اختلف.
 - **groups: apple_auth** — مجموعة المتغيرات أعلاه.
 - سكربت **Fetch signing files** يجلب الشهادات وملف التوزيع لـ `com.iraqifatawa.app` تلقائياً (ويُنشئها إن لم تكن موجودة مع `--create`).
 - **publishing.app_store_connect.auth: integration** — لاستخدام نفس المفتاح عند رفع الـ IPA لاحقاً.

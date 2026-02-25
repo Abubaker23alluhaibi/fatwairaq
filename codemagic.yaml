@@ -53,6 +53,8 @@ workflows:
     name: iOS Release
     max_build_duration: 120
     instance_type: mac_mini_m2
+    # الاسم أدناه يجب أن يطابق بالضبط الاسم في Codemagic: Team settings → Integrations (أو Team Keys)
+    # انسخ الاسم (Label) من هناك وغيّر "Codemagic_Key" إذا كان مختلفاً عندك
     integrations:
       app_store_connect: Codemagic_Key
     environment:
@@ -106,6 +108,7 @@ workflows:
     artifacts:
       - ./artifacts/ios/*.ipa
     publishing:
+      # يستخدم المفتاح المربوط في integrations أعلاه (auth: integration = المفتاح الافتراضي للـ workflow)
       app_store_connect:
         auth: integration
       email:

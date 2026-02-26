@@ -1,5 +1,5 @@
 # فتاوى العراق — Codemagic: بناء Android و iOS
-# تم التعديل لإجبار النظام على تجاوز الشهادات القديمة وإنشاء Private Key جديد
+# تم التعديل باستخدام الاسم الصحيح Codemagic_Key وحل مشكلة الـ Private Key
 
 workflows:
   android-release:
@@ -52,8 +52,9 @@ workflows:
     name: iOS Release
     max_build_duration: 120
     instance_type: mac_mini_m2
+    # تم استخدام الاسم الذي أكدت عليه Codemagic_Key
     integrations:
-      app_store_connect: integration
+      app_store_connect: Codemagic_Key
     environment:
       groups:
         - apple_auth
@@ -76,7 +77,7 @@ workflows:
           keychain initialize
       - name: Fetch signing files from App Store Connect
         script: |
-          # إضافة --create-if-missing لإجبار Codemagic على إنشاء شهادة جديدة يمتلك مفتاحها
+          # إضافة --create لإجبار Codemagic على إنشاء شهادة جديدة يمتلك مفتاحها الخاص
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
       - name: Add certificates to keychain
         script: |

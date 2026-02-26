@@ -1,10 +1,62 @@
-ios-release:
+# فتاوى العراق — Codemagic: بناء Android و iOS
+# ارفع المشروع على GitHub ثم أضف التطبيق في codemagic.io وربط الريبو.
+# أضف في Codemagic: Android keystore (مرجع fatwa_keystore) + iOS شهادات وملف توزيع.
+
+workflows:
+  android-release:
+    name: Android Release
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    environment:
+      android_signing:
+        - fatwa_keystore   # اسم مرجع الـ keystore بعد رفعه في Codemagic → Code signing identities → Android keystores
+      vars:
+        DOTNET_PATH: $CM_BUILD_DIR/dotnet
+        DOTNET: $CM_BUILD_DIR/dotnet/dotnet
+        PACKAGE_NAME: "com.iraqifatawa.app"
+    scripts:
+      - name: Install .NET 9 SDK
+        script: |
+          wget https://dot.net/v1/dotnet-install.sh
+          chmod +x dotnet-install.sh
+          ./dotnet-install.sh --install-dir $DOTNET_PATH --channel 9.0
+      - name: Install MAUI workload (Android)
+        script: |
+          $DOTNET nuget locals all --clear
+          $DOTNET workload install android maui --source https://api.nuget.org/v3/index.json
+      - name: Build Android (AAB للـ Play Store)
+        script: |
+          export ANDROID_KEYSTORE_PATH="$CM_KEYSTORE_PATH"
+          export ANDROID_KEYSTORE_PASSWORD="$CM_KEYSTORE_PASSWORD"
+          export ANDROID_KEY_ALIAS="$CM_KEY_ALIAS"
+          export ANDROID_KEY_PASSWORD="$CM_KEY_PASSWORD"
+          $DOTNET publish -f net9.0-android -c Release \
+            -p:AndroidPackageFormat=aab \
+            -p:AndroidKeyStore=True \
+            -p:AndroidSigningKeyStore="$CM_KEYSTORE_PATH" \
+            -p:AndroidSigningStorePass="$CM_KEYSTORE_PASSWORD" \
+            -p:AndroidSigningKeyAlias="$CM_KEY_ALIAS" \
+            -p:AndroidSigningKeyPass="$CM_KEY_PASSWORD" \
+            -o ./artifacts/android
+    artifacts:
+      - ./artifacts/android/*.aab
+      - ./artifacts/android/*.apk
+    publishing:
+      email:
+        recipients:
+          - fatwairaq@gmail.com
+        notify:
+          success: true
+          failure: true
+
+  ios-release:
     name: iOS Release
     max_build_duration: 120
     instance_type: mac_mini_m2
-    # استخدم اسم المفتاح أو الاسم الظاهر في الإعدادات
+    # الاسم أدناه يجب أن يطابق بالضبط الاسم في Codemagic: Team settings → Integrations (أو Team Keys)
+    # انسخ الاسم (Label) من هناك وغيّر "Codemagic_Key" إذا كان مختلفاً عندك
     integrations:
-      app_store_connect: "Seyfeddin Ozturk" 
+      app_store_connect: Codemagic_Key
     environment:
       groups:
         - apple_auth
@@ -27,7 +79,6 @@ ios-release:
           keychain initialize
       - name: Fetch signing files from App Store Connect
         script: |
-          # هنا سيستخدم المفتاح المربوط لجلب الملفات
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
       - name: Add certificates to keychain
         script: |
@@ -57,6 +108,7 @@ ios-release:
     artifacts:
       - ./artifacts/ios/*.ipa
     publishing:
+      # يستخدم المفتاح المربوط في integrations أعلاه (auth: integration = المفتاح الافتراضي للـ workflow)
       app_store_connect:
         auth: integration
       email:

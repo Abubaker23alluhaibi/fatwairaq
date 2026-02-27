@@ -1,92 +1,36 @@
-# فتاوى العراق — Codemagic YAML (Android & iOS)
+# اسم الـ Workflow الخاص بتطبيق فتاوى العراق
 workflows:
-  android-release:
-    name: Android Release
-    max_build_duration: 120
-    instance_type: mac_mini_m2
-    environment:
-      groups:
-        - android_signing
-      vars:
-        DOTNET_PATH: $CM_BUILD_DIR/dotnet
-        DOTNET: $CM_BUILD_DIR/dotnet/dotnet
-        PACKAGE_NAME: "com.iraqifatawa.app"
-    scripts:
-      - name: Install .NET 9 SDK
-        script: |
-          wget https://dot.net/v1/dotnet-install.sh
-          chmod +x dotnet-install.sh
-          ./dotnet-install.sh --install-dir $DOTNET_PATH --channel 9.0
-      - name: Install MAUI workload (Android)
-        script: |
-          $DOTNET nuget locals all --clear
-          $DOTNET workload install android maui --source https://api.nuget.org/v3/index.json
-      - name: Build Android (AAB)
-        script: |
-          $DOTNET publish -f net9.0-android -c Release \
-            -p:AndroidPackageFormat=aab \
-            -p:AndroidKeyStore=True \
-            -p:AndroidSigningKeyStore="$CM_KEYSTORE_PATH" \
-            -p:AndroidSigningStorePass="$CM_KEYSTORE_PASSWORD" \
-            -p:AndroidSigningKeyAlias="$CM_KEY_ALIAS" \
-            -p:AndroidSigningKeyPass="$CM_KEY_PASSWORD" \
-            -o ./artifacts/android
-    artifacts:
-      - ./artifacts/android/*.aab
-      - ./artifacts/android/*.apk
-    publishing:
-      email:
-        recipients:
-          - fatwairaq@gmail.com
-
   ios-release:
-    name: iOS Release
+    name: iOS Release Build
     max_build_duration: 120
     instance_type: mac_mini_m2
-    integrations:
-      app_store_connect: Codemagic_Key
     environment:
       groups:
-        - apple_auth
+        - ios_signing # تأكد أنك أنشأت هذه المجموعة في الإعدادات وضعت فيها الـ API Keys
       vars:
-        DOTNET_PATH: $CM_BUILD_DIR/dotnet
-        DOTNET: $CM_BUILD_DIR/dotnet/dotnet
-        BUNDLE_ID: "com.iraqifatawa.app"
+        BUNDLE_ID: "com.iraqfatawa.app" # تأكد من مطابقة هذا المعرف لتطبيقك
+        XCODE_WORKSPACE: "ios/Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
     scripts:
-      - name: Install .NET 9 SDK
-        script: |
-          wget https://dot.net/v1/dotnet-install.sh
-          chmod +x dotnet-install.sh
-          ./dotnet-install.sh --install-dir $DOTNET_PATH --channel 9.0
-      - name: Install MAUI workload (iOS)
-        script: |
-          $DOTNET nuget locals all --clear
-          $DOTNET workload install ios maui --source https://api.nuget.org/v3/index.json
-      - name: Set up keychain for code signing
-        script: |
+      - name: Set up code signing settings on Codemagic
+        script: | 
           keychain initialize
       - name: Fetch signing files from App Store Connect
         script: | 
-          # استخدام --create لإنشاء شهادة ومفتاح خاص جديدين تلقائياً
+          # هذا الأمر يحل مشكلة Private Key المفقود بإنشاء شهادة جديدة (--create)
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
-      - name: Set Info.plist (export compliance)
-        script: |
-          PLIST="$CM_BUILD_DIR/Platforms/iOS/Info.plist"
-          if [ -f "$PLIST" ]; then
-            /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" "$PLIST" 2>/dev/null || \
-            /usr/libexec/PlistBuddy -c "Set :ITSAppUsesNonExemptEncryption false" "$PLIST" 2>/dev/null || true
-          fi
-      - name: Build iOS (IPA)
-        script: |
-          $DOTNET publish -f net9.0-ios -c Release \
-            -p:BuildIpa=True \
-            -p:RuntimeIdentifier=ios-arm64 \
-            -o ./artifacts/ios
+      - name: Set up code signing identities
+        script: | 
+          keychain add-certificates
+      - name: Flutter build ipa
+        script: | 
+          flutter build ipa --release \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME" \
+            --export-options-plist=$HOME/export_options.plist
     artifacts:
-      - ./artifacts/ios/*.ipa
+      - build/ios/ipa/*.ipa
     publishing:
-      app_store_connect:
-        auth: integration
       email:
         recipients:
-          - fatwairaq@gmail.com
+          - bake16t@gmail.com # ضع إيميلك هنا لتصلك النتيجة

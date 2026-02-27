@@ -1,14 +1,12 @@
 # فتاوى العراق — Codemagic: بناء Android و iOS
-# تم التعديل باستخدام الاسم الصحيح Codemagic_Key وحل مشكلة الـ Private Key
-
 workflows:
   android-release:
     name: Android Release
     max_build_duration: 120
     instance_type: mac_mini_m2
     environment:
-      android_signing:
-        - fatwa_keystore
+      groups:
+        - android_signing
       vars:
         DOTNET_PATH: $CM_BUILD_DIR/dotnet
         DOTNET: $CM_BUILD_DIR/dotnet/dotnet
@@ -23,12 +21,8 @@ workflows:
         script: |
           $DOTNET nuget locals all --clear
           $DOTNET workload install android maui --source https://api.nuget.org/v3/index.json
-      - name: Build Android (AAB للـ Play Store)
+      - name: Build Android (AAB)
         script: |
-          export ANDROID_KEYSTORE_PATH="$CM_KEYSTORE_PATH"
-          export ANDROID_KEYSTORE_PASSWORD="$CM_KEYSTORE_PASSWORD"
-          export ANDROID_KEY_ALIAS="$CM_KEY_ALIAS"
-          export ANDROID_KEY_PASSWORD="$CM_KEY_PASSWORD"
           $DOTNET publish -f net9.0-android -c Release \
             -p:AndroidPackageFormat=aab \
             -p:AndroidKeyStore=True \
@@ -44,15 +38,11 @@ workflows:
       email:
         recipients:
           - fatwairaq@gmail.com
-        notify:
-          success: true
-          failure: true
 
   ios-release:
     name: iOS Release
     max_build_duration: 120
     instance_type: mac_mini_m2
-    # تم استخدام الاسم الذي أكدت عليه Codemagic_Key
     integrations:
       app_store_connect: Codemagic_Key
     environment:
@@ -76,12 +66,8 @@ workflows:
         script: |
           keychain initialize
       - name: Fetch signing files from App Store Connect
-        script: |
-          # إضافة --create لإجبار Codemagic على إنشاء شهادة جديدة يمتلك مفتاحها الخاص
+        script: | 
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
-      - name: Add certificates to keychain
-        script: |
-          keychain add-certificates
       - name: Set Info.plist (export compliance)
         script: |
           PLIST="$CM_BUILD_DIR/Platforms/iOS/Info.plist"
@@ -91,18 +77,9 @@ workflows:
           fi
       - name: Build iOS (IPA)
         script: |
-          CERT_NAME=$(keychain list-certificates | jq -r '.[] | .common_name' | head -1)
-          PROFILE_NAME=""
-          for f in ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision; do
-            [ -f "$f" ] || continue
-            PROFILE_NAME=$(security cms -D -i "$f" 2>/dev/null | /usr/libexec/PlistBuddy -c "print :Name" /dev/stdin 2>/dev/null)
-            [ -n "$PROFILE_NAME" ] && break
-          done
           $DOTNET publish -f net9.0-ios -c Release \
             -p:BuildIpa=True \
             -p:RuntimeIdentifier=ios-arm64 \
-            -p:CodesignKey="$CERT_NAME" \
-            -p:CodesignProvision="$PROFILE_NAME" \
             -o ./artifacts/ios
     artifacts:
       - ./artifacts/ios/*.ipa
@@ -112,6 +89,3 @@ workflows:
       email:
         recipients:
           - fatwairaq@gmail.com
-        notify:
-          success: true
-          failure: true

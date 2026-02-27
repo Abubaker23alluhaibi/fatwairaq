@@ -1,4 +1,4 @@
-# فتاوى العراق — Codemagic: بناء Android و iOS
+# فتاوى العراق — Codemagic YAML (Android & iOS)
 workflows:
   android-release:
     name: Android Release
@@ -67,6 +67,7 @@ workflows:
           keychain initialize
       - name: Fetch signing files from App Store Connect
         script: | 
+          # استخدام --create لإنشاء شهادة ومفتاح خاص جديدين تلقائياً
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
       - name: Set Info.plist (export compliance)
         script: |
